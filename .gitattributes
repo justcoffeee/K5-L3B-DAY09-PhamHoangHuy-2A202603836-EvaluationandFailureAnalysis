@@ -1,0 +1,5 @@
+# The eval set is hashed byte-for-byte into every report (manifest.eval_set_sha) and the gate
+# refuses a PR whose SHA differs from the baseline's. Check it out with LF on every OS so a
+# Windows clone does not disagree with the Linux CI run on the same commit.
+src/data/eval/*.jsonl text eol=lf
+src/data/eval/*.json  text eol=lf
