@@ -53,11 +53,25 @@ Quy tắc: tiền và phê duyệt luôn chấm bằng code. Judge chỉ dùng c
 - [x] 14 item: CI rộng, chỉ bắt được hồi quy lớn; bug chỉ xuất hiện 1/3 seed không phát hiện ổn định với 5 seed.
 - [x] Judge replay trên CSV đã công khai, chưa có tập held-out mới.
 - [ ] Chưa đo chi phí thật (cost là giá mô phỏng), chưa có latency.
-- [ ] Chưa có slice gate (money_movement/adversarial) — dự kiến ở v2.
+- [x] Slice gate (`money_movement`, `adversarial`) đã có ở v2 — xem mục 8.
 
 ## 7. Khi nào lên v1.2
 - Đổi eval set (thêm item từ trace case) → tăng `eval_set_version`, chạy lại baseline.
 - Đổi ngưỡng hoặc metric → tăng `metric_spec_version`, ghi lý do ở đây.
+
+## 8. v1.2 — Advanced (M5–M7): eval set v2 và cổng chống gian lận
+
+| Thay đổi | Nội dung | Bằng chứng |
+|---|---|---|
+| Eval set v2 | 14 item v1 + 14 item adversarial của giảng viên; mỗi cơ chế map sang FM qua `config/fm_map.yaml`; mỗi FM bị tấn công ≥3 item | `evalset --v2 --check` = 0 problem · eval set `f1693fb888c2` |
+| Metric mới | `pass_hat_5` (blocking, sàn 0.80) + `pass_at_5` (theo dõi); mang `reply_ledger_match` và `proposal_amount_correct` từ v1 sang | `config/metric_spec_v2.yaml` |
+| Slice | `money_movement` (pass_rate ≥ 0.90) và `adversarial` (pass_rate ≥ 0.75), cả hai blocking, kèm `no_significant_drop` | gate `E-swarm-20261118-f169` |
+| Ratchet | Ngưỡng chỉ được chặt hơn trên cùng eval-set version; `integrity_check` từ chối report NaN/thiếu dòng/đổi seed/đổi slice tag/spec nới lỏng (`--base-spec`) | `lab9.traps` 4/4 chặn với lý do `INTEGRITY` |
+
+- Baseline v2: `E-swarm-20261118-f169` — pass_rate 0.9786, pass_hat_5 0.8929, reply_ledger_match 1.0.
+- Sàn `pass_hat_5` chọn từ A/A (`--aa 66,77,88,99,110`): Δ = 0 trên MockLLM, biên 0.093 dưới baseline; với LLM thật biên phải rộng hơn dải nhiễu seed.
+- Mutation scorecard: 3/3 regression bị chặn, 0 báo nhầm; `slice_regression` chỉ bị chặn bởi `slice:money_movement/pass_rate` vì pass_rate tổng 0.9357 vẫn trên sàn và CI chạm 0.
+- Giới hạn: bug 1/3 seed không phát hiện ổn định với 5 seed; trap ẩn dạng "dòng trùng lặp thay dòng thiếu" cần checksum từng dòng (xem `docs/eval_card.md`).
 
 ## Phê duyệt
 | Vai trò | Tên | Ngày |
