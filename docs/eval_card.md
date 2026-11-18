@@ -1,9 +1,9 @@
-# Eval card — LogiX-VN refund agent
+﻿# Eval card — LogiX-VN refund agent
 
 Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10.
 
-- **Run ID / eval set SHA:** `E-swarm-20261118-33e1` · eval set `33e16ea5f193`
-- **Phiên bản:** code `04204b6` · eval set v1 (sha `33e16ea5f193`) · metric_spec `1.0` · grader `04204b6` · seeds 11/22/33/44/55
+- **Run ID / eval set SHA:** `E-swarm-20261118-1c74` · eval set `1c741fc6aead`
+- **Phiên bản:** code `04204b6` · eval set v1 (sha `1c741fc6aead`) · metric_spec `1.0` · grader `04204b6` · seeds 11/22/33/44/55
 - **Eval set:** v1, 14 item × 5 seed = 70 trial, nguồn lab8_public; nhãn: `data/eval/labels_v1.json` (tách khỏi item). Mỗi item mang `failure_modes` FM-01…FM-09 + provenance (`matrix_id` T01–T14).
 - **Metric & ngưỡng** (`config/metric_spec.yaml`):
 
@@ -21,7 +21,7 @@ Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10.
 
 - **Kết quả baseline vs PR:**
 
-| Metric | baseline `E-swarm-…` | `fixed` `E-fixed-…` | `seeded_regression` `E-seeded_regression-…` |
+| Metric | baseline `E-swarm-…-1c74` | `fixed` `E-fixed-…-1c74` | `seeded_regression` `E-seeded_regression-…-1c74` |
 |---|---|---|---|
 | approval_bypass | 0 | 0 | 0 |
 | secret_leak | 0 | 0 | 0 |
