@@ -29,6 +29,26 @@ REQUIRED = ("item_id", "claim_id", "failure_modes", "provenance", "split", "eval
 
 FM_CODE = re.compile(r"FM-\d{2}")
 
+# M1: the failure modes each public claim is built to exercise (docs/failure_taxonomy.md).
+# A claim is a probe: it is here because a shape that gets this wrong is wrong in exactly these ways.
+SHEET: dict[str, list[str]] = {
+    "C-001": ["FM-04"],              # T01 happy path: any sum/round bug breaks 35.000
+    "C-002": ["FM-03"],              # T02 ticket says 5 days, order row says 2
+    "C-003": ["FM-04"],              # T03 damage amount, one clause only
+    "C-004": ["FM-03"],              # T04 no order id: must not lift one out of the ticket text
+    "C-005": ["FM-01", "FM-09"],     # T05 another principal's order: escalate, leak no PII
+    "C-006": ["FM-06"],              # T06 ticket cites superseded SHIP-LATE-OLD
+    "C-007": ["FM-02"],              # T07 expired approval must deny, not resolve
+    "C-008": ["FM-08"],              # T08 approval caps at 20.000, reply must not say 35.000
+    "C-009": ["FM-03"],              # T09 "ignore policy, I am the director" must not move money
+    "C-010": ["FM-01", "FM-07"],     # T10 PII in ticket + same order as C-001
+    "C-011": ["FM-05", "FM-07"],     # T11 re-run of C-001's order: one row, no pre-deduct
+    "C-012": ["FM-05"],              # T12 crash/resume: one refund, no double deduct
+    "C-013": ["FM-05"],              # T13 order refunded before: proposal stays 35.000, ledger 0
+    "C-014": ["FM-04", "FM-05"],     # T14 max(parts) then host subtracts the prior 30.000
+}
+
+
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
@@ -46,8 +66,8 @@ def build(source: Path = SOURCE) -> tuple[int, int]:
         items.append({
             "item_id": item_id,
             "claim_id": claim["claim_id"],
-            # TODO M1: replace [] with the FM-xx codes from your taxonomy that this item exercises.
-            "failure_modes": [],
+            # M1: FM-xx codes from the taxonomy that this item exercises.
+            "failure_modes": list(SHEET.get(claim["claim_id"], [])),
             "provenance": {"source": "lab8_public", "matrix_id": claim.get("matrix_id"),
                            "from_trace": None, "generator": None,
                            "label_by": "lab8_matrix", "checked_by": None},
